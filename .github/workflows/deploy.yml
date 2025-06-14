@@ -1,0 +1,56 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and push WebApp image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: awaes-clo835-webapp
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t webapp -f ./clo835_summer2025_assignment1/webapp/Dockerfile ./clo835_summer2025_assignment1/webapp
+
+        docker tag webapp:latest 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-webapp
+
+        docker push 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-webapp
+
+
+    - name: Build and push MySQL image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: awaes-clo835-mysql
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        
+        docker pull mysql
+
+        docker tag mysql:latest 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-mysql
+
+        docker push 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-mysql
