@@ -35,10 +35,8 @@ jobs:
         ECR_REPOSITORY: awaes-clo835-webapp
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t webapp -f ./clo835_summer2025_assignment1/webapp/Dockerfile ./clo835_summer2025_assignment1/webapp
-
+        docker build -t webapp ./webapp
         docker tag webapp:latest 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-webapp
-
         docker push 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-webapp
 
 
@@ -49,8 +47,6 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         
-        docker pull mysql
-
+        docker build -t mysql ./mysql
         docker tag mysql:latest 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-mysql
-
         docker push 334981590411.dkr.ecr.us-east-1.amazonaws.com/awaes-clo835-mysql
