@@ -70,7 +70,7 @@ resource "aws_instance" "web_server" {
   instance_type               = var.instance_type
   key_name                    = var.key_name
   associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
+  vpc_security_group_ids      = [aws_security_group.awaes_sg.id]
   subnet_id                   = data.aws_subnet.default.id
 
   user_data = filebase64("${path.module}/user_data.sh")
